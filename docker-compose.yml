@@ -1,63 +1,14 @@
 version: '3.7'
 
 services:
-  influxdb:
-    image: influxdb:1.8
-    ports:
-      - '8086:8086'
-    volumes:
-      - influxdb-storage:/var/lib/influxdb
-    env_file:
-      - default.env
-    restart: always
-
-### Uncomment lines below to enable Chronograf containter
-#  chronograf:
-#    image: chronograf:latest
-#    ports:
-#      - '8888:8888'
-#    volumes:
-#      - chronograf-storage:/var/lib/chronograf
-#    depends_on:
-#      - influxdb
-#    env_file:
-#      - default.env
-#    restart: always
-
-  grafana:
-    image: grafana/grafana
-    ports:
-      - '3000:3000'
-    volumes:
-      - grafana-storage:/var/lib/grafana
-      - ./grafana-provisioning/:/etc/grafana/provisioning
-    depends_on:
-      - influxdb
-    env_file:
-      - default.env
-    restart: always
-
-  grpc:
-    image: sponsianus/starlink-grpc-tools
-    command: "dish_grpc_influx.py -t 1 -a -v status obstruction_detail alert_detail ping_drop ping_run_length ping_latency ping_loaded_latency usage bulk_history"
-    depends_on:
-      - influxdb
-    env_file:
-      - default.env
-    tty: true
-    restart: always
+#   grpc:
+#     image: sponsianus/starlink-grpc-tools
+#     command: "dish_grpc_influx.py -t 1 -a -v status obstruction_detail alert_detail ping_drop ping_run_length ping_latency ping_loaded_latency usage bulk_history"
+#     tty: true
+#     restart: always
 
   netstats:
     image: sponsianus/netstats
     volumes:
-      - ./netstats-provisioning:/etc/telegraf
-    depends_on:
-      - influxdb
-    env_file:
-      - default.env
+      - ${PWD}/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     restart: always
-
-volumes:
-  influxdb-storage:
-  chronograf-storage:
-  grafana-storage:
